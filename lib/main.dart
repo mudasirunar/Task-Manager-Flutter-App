@@ -1,20 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'core/constants/app_strings.dart';
+import 'core/theme/app_theme.dart';
+import 'data/datasources/task_shared_prefs_datasource.dart';
+import 'data/repositories/task_repository_impl.dart';
+import 'presentation/controllers/task_controller.dart';
+import 'presentation/screens/splash/splash_screen.dart';
 
-void main() {
-  runApp(const MainApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize persistence and Clean Architecture dependency graph
+  final sharedPreferences = await SharedPreferences.getInstance();
+  final localDataSource = TaskSharedPrefsDataSource(sharedPreferences);
+  final taskRepository = TaskRepositoryImpl(localDataSource);
+  final taskController = TaskController(taskRepository);
+
+  runApp(TaskManagerApp(controller: taskController));
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+/// Root widget configuring the application theme and initial route.
+class TaskManagerApp extends StatelessWidget {
+  final TaskController controller;
+
+  const TaskManagerApp({
+    super.key,
+    required this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return MaterialApp(
+      title: AppStrings.appName,
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: SplashScreen(controller: controller),
     );
   }
 }

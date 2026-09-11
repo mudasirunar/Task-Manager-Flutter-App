@@ -1,0 +1,115 @@
+import 'package:flutter/material.dart';
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_dimensions.dart';
+import '../../../core/constants/app_strings.dart';
+import 'custom_button.dart';
+
+/// Modal dialog prompting confirmation before destructive actions (such as deletion).
+class ConfirmationDialog extends StatelessWidget {
+  final String title;
+  final String message;
+  final String confirmText;
+  final String cancelText;
+
+  const ConfirmationDialog({
+    super.key,
+    this.title = AppStrings.deleteDialogTitle,
+    this.message = AppStrings.deleteDialogContent,
+    this.confirmText = AppStrings.deleteConfirmButton,
+    this.cancelText = AppStrings.cancelButton,
+  });
+
+  /// Displays the confirmation dialog and returns `true` if confirmed, `false` otherwise.
+  static Future<bool> show(
+    BuildContext context, {
+    String title = AppStrings.deleteDialogTitle,
+    String message = AppStrings.deleteDialogContent,
+    String confirmText = AppStrings.deleteConfirmButton,
+    String cancelText = AppStrings.cancelButton,
+  }) async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: true,
+      builder: (ctx) => ConfirmationDialog(
+        title: title,
+        message: message,
+        confirmText: confirmText,
+        cancelText: cancelText,
+      ),
+    );
+    return result ?? false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(AppDimensions.spaceLG),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Warning Icon
+            Container(
+              padding: const EdgeInsets.all(AppDimensions.spaceMD),
+              decoration: const BoxDecoration(
+                color: AppColors.errorLight,
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.delete_outline_rounded,
+                color: AppColors.error,
+                size: AppDimensions.iconLG,
+              ),
+            ),
+            const SizedBox(height: AppDimensions.spaceMD),
+
+            // Dialog Title
+            Text(
+              title,
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
+              ),
+            ),
+            const SizedBox(height: AppDimensions.spaceSM),
+
+            // Dialog Message
+            Text(
+              message,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 14,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: AppDimensions.spaceLG),
+
+            // Action Buttons
+            Row(
+              children: [
+                Expanded(
+                  child: CustomButton(
+                    text: cancelText,
+                    variant: ButtonVariant.secondary,
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                ),
+                const SizedBox(width: AppDimensions.spaceMD),
+                Expanded(
+                  child: CustomButton(
+                    text: confirmText,
+                    variant: ButtonVariant.danger,
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
