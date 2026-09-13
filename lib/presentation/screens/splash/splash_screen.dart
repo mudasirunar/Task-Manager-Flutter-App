@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
@@ -46,7 +47,11 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _animController.forward();
-    _bootstrap();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _bootstrap();
+      }
+    });
   }
 
   Future<void> _bootstrap() async {
@@ -79,55 +84,86 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Center(
-        child: FadeTransition(
-          opacity: _fadeAnim,
-          child: ScaleTransition(
-            scale: _scaleAnim,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // App Logo Emblem
-                Container(
-                  width: 84,
-                  height: 84,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: AppDimensions.cardShadow,
-                  ),
-                  child: const Icon(
-                    Icons.check_rounded,
-                    size: 44,
-                    color: AppColors.surface,
-                  ),
-                ),
-                const SizedBox(height: AppDimensions.spaceLG),
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor =
+        isDark ? AppColors.darkBackground : AppColors.background;
+    final textPrimary =
+        isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+    final textSecondary =
+        isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
+    final iconBorder = isDark
+        ? Border.all(color: AppColors.darkBorder, width: 1.5)
+        : Border.all(color: AppColors.border, width: 1.0);
+    final iconShadow = isDark
+        ? [
+            const BoxShadow(
+              color: Color(0x33000000),
+              offset: Offset(0, 8),
+              blurRadius: 24,
+            ),
+          ]
+        : AppDimensions.cardShadow;
 
-                // App Name
-                const Text(
-                  AppStrings.appName,
-                  style: TextStyle(
-                    color: AppColors.textPrimary,
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: -0.8,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+        statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
+      ),
+      child: Scaffold(
+        backgroundColor: backgroundColor,
+        body: Center(
+          child: FadeTransition(
+            opacity: _fadeAnim,
+            child: ScaleTransition(
+              scale: _scaleAnim,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // App Logo Emblem
+                  Container(
+                    width: 88,
+                    height: 88,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      border: iconBorder,
+                      boxShadow: iconShadow,
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(21),
+                      child: Image.asset(
+                        'assets/app_icon.png',
+                        width: 88,
+                        height: 88,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: AppDimensions.spaceXS + 2),
+                  const SizedBox(height: AppDimensions.spaceLG + 4),
 
-                // Tagline
-                const Text(
-                  AppStrings.appTagline,
-                  style: TextStyle(
-                    color: AppColors.textSecondary,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                  // App Name
+                  Text(
+                    AppStrings.appName,
+                    style: TextStyle(
+                      color: textPrimary,
+                      fontSize: 26,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.8,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: AppDimensions.spaceXS + 2),
+
+                  // Tagline
+                  Text(
+                    AppStrings.appTagline,
+                    style: TextStyle(
+                      color: textSecondary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

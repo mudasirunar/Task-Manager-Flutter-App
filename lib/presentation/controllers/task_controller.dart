@@ -18,6 +18,9 @@ class TaskController extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
 
+  late final ValueNotifier<ThemeMode> themeModeNotifier =
+      ValueNotifier<ThemeMode>(_themeMode);
+
   // Getters
   List<TaskEntity> get tasks => List.unmodifiable(_tasks);
   TaskFilter get activeFilter => _activeFilter;
@@ -62,6 +65,10 @@ class TaskController extends ChangeNotifier {
     } else {
       _themeMode = ThemeMode.system;
     }
+    // Update themeModeNotifier if already initialized
+    try {
+      themeModeNotifier.value = _themeMode;
+    } catch (_) {}
   }
 
   /// Toggles theme between Light and Dark and persists the selection.
@@ -75,6 +82,7 @@ class TaskController extends ChangeNotifier {
     }
 
     _themeMode = isCurrentlyDark ? ThemeMode.light : ThemeMode.dark;
+    themeModeNotifier.value = _themeMode;
     notifyListeners();
 
     await _repository.setThemeMode(_themeMode == ThemeMode.dark ? 'dark' : 'light');
@@ -84,9 +92,20 @@ class TaskController extends ChangeNotifier {
   Future<void> setThemeMode(ThemeMode mode) async {
     if (_themeMode != mode) {
       _themeMode = mode;
+      themeModeNotifier.value = _themeMode;
       notifyListeners();
-      await _repository.setThemeMode(mode.name);
+
+      String val = 'system';
+      if (mode == ThemeMode.dark) val = 'dark';
+      if (mode == ThemeMode.light) val = 'light';
+      await _repository.setThemeMode(val);
     }
+  }
+
+  @override
+  void dispose() {
+    themeModeNotifier.dispose();
+    super.dispose();
   }
 
   /// Sets the active filter and notifies listeners.
