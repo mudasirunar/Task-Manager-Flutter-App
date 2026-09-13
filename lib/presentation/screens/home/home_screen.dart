@@ -199,7 +199,14 @@ class HomeScreen extends StatelessWidget {
                                   if (direction ==
                                       DismissDirection.startToEnd) {
                                     // Swipe right: toggle status
-                                    await controller.toggleTaskStatus(task.id);
+                                    // Allow the card to finish its snap-back animation to rest (0.0) first,
+                                    // so the background color, text, and card UI do not mutate mid-motion.
+                                    Future.delayed(
+                                      const Duration(milliseconds: 220),
+                                      () {
+                                        controller.toggleTaskStatus(task.id);
+                                      },
+                                    );
                                     return false;
                                   } else if (direction ==
                                       DismissDirection.endToStart) {

@@ -218,5 +218,33 @@ void main() {
       expect(find.byType(TaskCard), findsNothing);
       expect(controller.tasks, isEmpty);
     });
+
+    testWidgets('swiping right toggles task status cleanly after snap back', (tester) async {
+      final now = DateTime(2026, 9, 12);
+      mockRepo.tasks = [
+        TaskEntity(
+          id: '1',
+          title: 'Task To Toggle',
+          isCompleted: false,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      ];
+      await controller.loadTasks();
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(controller.tasks.first.isCompleted, isFalse);
+
+      // Fling right past threshold and release finger
+      await tester.fling(find.byType(Dismissible), const Offset(500, 0), 1000);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.pumpAndSettle();
+
+      // Verify task status was toggled
+      expect(controller.tasks.first.isCompleted, isTrue);
+    });
   });
 }

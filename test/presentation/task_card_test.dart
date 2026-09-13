@@ -74,5 +74,55 @@ void main() {
       // Verify onDelete was invoked after exit animation
       expect(deleteCalled, isTrue);
     });
+
+    testWidgets('shows Mark Completed background on pending task swipe', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: TaskCard(
+              task: testTask, // isCompleted: false
+              onToggle: () {},
+              onTap: () {},
+              onDelete: () {},
+              onConfirmDismiss: (direction) async => false,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Drag right to reveal Dismissible background
+      await tester.drag(find.byType(TaskCard), const Offset(150, 0));
+      await tester.pump();
+
+      expect(find.text('Mark Completed'), findsOneWidget);
+      expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
+    });
+
+    testWidgets('shows Mark Pending background on completed task swipe', (tester) async {
+      final completedTask = testTask.copyWith(isCompleted: true);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: TaskCard(
+              task: completedTask, // isCompleted: true
+              onToggle: () {},
+              onTap: () {},
+              onDelete: () {},
+              onConfirmDismiss: (direction) async => false,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Drag right to reveal Dismissible background
+      await tester.drag(find.byType(TaskCard), const Offset(150, 0));
+      await tester.pump();
+
+      expect(find.text('Mark Pending'), findsOneWidget);
+      expect(find.byIcon(Icons.replay_rounded), findsOneWidget);
+    });
   });
 }

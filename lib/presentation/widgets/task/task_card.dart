@@ -321,6 +321,15 @@ class _TaskCardState extends State<TaskCard>
     if (widget.onConfirmDismiss == null) {
       innerCard = cardContent;
     } else {
+      final isCompleting = !widget.task.isCompleted;
+      final toggleBgColor =
+          isCompleting ? AppColors.success : AppColors.warning;
+      final toggleIcon = isCompleting
+          ? Icons.check_circle_rounded
+          : Icons.replay_rounded;
+      final toggleText =
+          isCompleting ? 'Mark Completed' : 'Mark Pending';
+
       innerCard = Dismissible(
         key: ValueKey(widget.task.id),
         confirmDismiss: widget.onConfirmDismiss,
@@ -328,18 +337,24 @@ class _TaskCardState extends State<TaskCard>
         background: Container(
           margin: const EdgeInsets.symmetric(vertical: 2),
           decoration: BoxDecoration(
-            color: AppColors.success.withValues(alpha: 0.85),
+            color: toggleBgColor,
             borderRadius: AppDimensions.borderRadiusLarge,
           ),
           alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spaceLG),
-          child: const Row(
+          padding:
+              const EdgeInsets.symmetric(horizontal: AppDimensions.spaceLG),
+          child: Row(
             children: [
-              Icon(Icons.check_circle_outline_rounded, color: Colors.white),
-              SizedBox(width: 8),
+              Icon(toggleIcon, color: Colors.white, size: 22),
+              const SizedBox(width: 8),
               Text(
-                'Toggle Status',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                toggleText,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14.5,
+                  letterSpacing: -0.2,
+                ),
               ),
             ],
           ),
@@ -347,20 +362,26 @@ class _TaskCardState extends State<TaskCard>
         secondaryBackground: Container(
           margin: const EdgeInsets.symmetric(vertical: 2),
           decoration: BoxDecoration(
-            color: AppColors.error.withValues(alpha: 0.85),
+            color: AppColors.error,
             borderRadius: AppDimensions.borderRadiusLarge,
           ),
           alignment: Alignment.centerRight,
-          padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spaceLG),
+          padding:
+              const EdgeInsets.symmetric(horizontal: AppDimensions.spaceLG),
           child: const Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Text(
                 'Delete',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14.5,
+                  letterSpacing: -0.2,
+                ),
               ),
               SizedBox(width: 8),
-              Icon(Icons.delete_outline_rounded, color: Colors.white),
+              Icon(Icons.delete_outline_rounded, color: Colors.white, size: 22),
             ],
           ),
         ),
