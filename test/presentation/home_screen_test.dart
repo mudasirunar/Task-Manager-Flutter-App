@@ -57,15 +57,53 @@ void main() {
       );
     }
 
-    testWidgets('shows single empty state action button and hides FAB when no tasks exist', (tester) async {
+    testWidgets('shows single empty state action button and hides FAB when no tasks exist on all tabs', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
+      // On 'All' tab
       expect(find.text(AppStrings.emptyAllTitle), findsOneWidget);
-      expect(find.text(AppStrings.emptyAllSubtitle), findsOneWidget);
       expect(find.text('Add Your First Task'), findsOneWidget);
-      // FloatingActionButton must NOT be visible when tasks list is empty to prevent duplicate CTA buttons
       expect(find.byType(FloatingActionButton), findsNothing);
+
+      // Tap 'Pending' tab when no tasks exist
+      await tester.tap(find.text(AppStrings.filterPending));
+      await tester.pumpAndSettle();
+      expect(find.text(AppStrings.emptyAllTitle), findsOneWidget);
+      expect(find.text('Add Your First Task'), findsOneWidget);
+
+      // Tap 'Completed' tab when no tasks exist
+      await tester.tap(find.text(AppStrings.filterCompleted));
+      await tester.pumpAndSettle();
+      expect(find.text(AppStrings.emptyAllTitle), findsOneWidget);
+      expect(find.text('Add Your First Task'), findsOneWidget);
+    });
+
+    testWidgets('shows specific filter messages when tasks exist in the app', (tester) async {
+      final now = DateTime(2026, 9, 12);
+      mockRepo.tasks = [
+        TaskEntity(
+          id: '1',
+          title: 'Active Task',
+          isCompleted: false,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      ];
+      await controller.loadTasks();
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      // Switch to Completed tab where 0 tasks are completed
+      await tester.tap(find.text(AppStrings.filterCompleted));
+      await tester.pumpAndSettle();
+
+      expect(find.text(AppStrings.emptyCompletedTitle), findsOneWidget);
+      expect(find.text(AppStrings.emptyCompletedSubtitle), findsOneWidget);
+      // Main CTA button should not be present since tasks exist in the app and FAB is visible
+      expect(find.text('Add Your First Task'), findsNothing);
+      expect(find.byType(FloatingActionButton), findsOneWidget);
     });
 
     testWidgets('shows FAB and progress header when tasks exist', (tester) async {
