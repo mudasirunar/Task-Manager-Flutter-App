@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
+import '../../../core/utils/app_haptics.dart';
 
 /// Centralized, theme-reactive SnackBar system for notifications, success states,
 /// and enhanced undoable delete actions.
@@ -180,6 +181,7 @@ class _DynamicDeleteSnackBar extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 onTap: () {
+                  AppHaptics.mediumImpact();
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
                   onUndo!();
                 },

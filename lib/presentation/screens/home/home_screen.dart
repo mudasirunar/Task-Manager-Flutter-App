@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/utils/app_haptics.dart';
 import '../../../domain/entities/task_entity.dart';
 import '../../../domain/entities/task_filter.dart';
 import '../../controllers/task_controller.dart';
@@ -23,6 +24,7 @@ class HomeScreen extends StatelessWidget {
   });
 
   void _navigateToCreateTask(BuildContext context) {
+    AppHaptics.lightImpact();
     AppSnackBar.dismiss(context);
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -195,6 +197,7 @@ class HomeScreen extends StatelessWidget {
                                   if (direction ==
                                       DismissDirection.startToEnd) {
                                     // Swipe right: toggle status
+                                    AppHaptics.selection();
                                     // Allow the card to finish its snap-back animation to rest (0.0) first,
                                     // so the background color, text, and card UI do not mutate mid-motion.
                                     Future.delayed(
@@ -207,6 +210,7 @@ class HomeScreen extends StatelessWidget {
                                   } else if (direction ==
                                       DismissDirection.endToStart) {
                                     // Swipe left: delete
+                                    AppHaptics.mediumImpact();
                                     final confirmed =
                                         await ConfirmationDialog.show(
                                       context,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
+import '../../../core/utils/app_haptics.dart';
 import '../../../domain/entities/task_filter.dart';
 
 /// Row of filter chips (All, Pending, Completed) with live count indicators.
@@ -60,7 +61,12 @@ class TaskFilterChips extends StatelessWidget {
               borderRadius: AppDimensions.borderRadiusFull,
               elevation: 0,
               child: InkWell(
-                onTap: () => onFilterChanged(filter),
+                onTap: () {
+                  if (!isSelected) {
+                    AppHaptics.selection();
+                  }
+                  onFilterChanged(filter);
+                },
                 borderRadius: AppDimensions.borderRadiusFull,
                 child: Container(
                   padding: const EdgeInsets.symmetric(

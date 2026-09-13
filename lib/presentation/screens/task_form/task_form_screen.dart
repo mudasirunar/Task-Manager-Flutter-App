@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/utils/app_haptics.dart';
 import '../../../core/utils/validators.dart';
 import '../../../domain/entities/task_entity.dart';
 import '../../controllers/task_controller.dart';
@@ -91,6 +92,7 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     });
 
     if (success) {
+      AppHaptics.lightImpact();
       AppSnackBar.showSuccess(
         context,
         message: widget.isEditing

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/utils/app_haptics.dart';
 import 'custom_button.dart';
 
 /// Modal dialog prompting confirmation before destructive actions (such as deletion).
@@ -125,7 +126,10 @@ class ConfirmationDialog extends StatelessWidget {
                   child: CustomButton(
                     text: confirmText,
                     variant: ButtonVariant.danger,
-                    onPressed: () => Navigator.of(context).pop(true),
+                    onPressed: () {
+                      AppHaptics.heavyImpact();
+                      Navigator.of(context).pop(true);
+                    },
                   ),
                 ),
               ],

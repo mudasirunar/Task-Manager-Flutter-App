@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../../core/constants/app_dimensions.dart';
+import '../../../core/utils/app_haptics.dart';
 
 /// Animated theme toggle button featuring filled gradient icons for Sun and Moon,
 /// with a springy scale effect and full spin rotation micro-animation.
@@ -75,6 +76,7 @@ class _ThemeToggleButtonState extends State<ThemeToggleButton>
   }
 
   void _handleTap() {
+    AppHaptics.selection();
     _animController.forward(from: 0.0);
     widget.onToggle();
   }

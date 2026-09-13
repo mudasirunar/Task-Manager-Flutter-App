@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/utils/app_haptics.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../domain/entities/task_entity.dart';
 import '../common/confirmation_dialog.dart';
@@ -94,6 +95,7 @@ class _TaskCardState extends State<TaskCard>
   }
 
   Future<void> _handleDeletePress() async {
+    AppHaptics.lightImpact();
     final confirmed = await ConfirmationDialog.show(
       context,
       title: AppStrings.deleteDialogTitle,
@@ -177,7 +179,10 @@ class _TaskCardState extends State<TaskCard>
                         children: [
                           // Circular Animated Status Toggle Checkbox
                           GestureDetector(
-                            onTap: widget.onToggle,
+                            onTap: () {
+                              AppHaptics.selection();
+                              widget.onToggle();
+                            },
                             behavior: HitTestBehavior.opaque,
                             child: Padding(
                               padding: const EdgeInsets.only(top: 2.0, right: 12.0),
