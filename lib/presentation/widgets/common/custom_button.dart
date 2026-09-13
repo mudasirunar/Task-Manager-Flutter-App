@@ -26,6 +26,7 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     Color backgroundColor;
     Color foregroundColor;
@@ -33,13 +34,16 @@ class CustomButton extends StatelessWidget {
 
     switch (variant) {
       case ButtonVariant.primary:
-        backgroundColor = AppColors.primary;
+        backgroundColor = isDark ? AppColors.accent : AppColors.primary;
         foregroundColor = AppColors.surface;
         break;
       case ButtonVariant.secondary:
-        backgroundColor = AppColors.surface;
-        foregroundColor = AppColors.textPrimary;
-        borderSide = const BorderSide(color: AppColors.border, width: 1.5);
+        backgroundColor = isDark ? AppColors.darkSurface : AppColors.surface;
+        foregroundColor = isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+        borderSide = BorderSide(
+          color: isDark ? AppColors.darkBorder : AppColors.border,
+          width: 1.5,
+        );
         break;
       case ButtonVariant.danger:
         backgroundColor = AppColors.error;
@@ -47,7 +51,7 @@ class CustomButton extends StatelessWidget {
         break;
       case ButtonVariant.ghost:
         backgroundColor = Colors.transparent;
-        foregroundColor = AppColors.textSecondary;
+        foregroundColor = isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
         break;
     }
 

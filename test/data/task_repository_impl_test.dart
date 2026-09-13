@@ -6,6 +6,7 @@ import 'package:task_manager_app/domain/entities/task_entity.dart';
 
 class FakeTaskLocalDataSource implements TaskLocalDataSource {
   List<TaskModel> storedTasks = [];
+  String? storedThemeMode;
 
   @override
   Future<List<TaskModel>> getCachedTasks() async {
@@ -20,6 +21,14 @@ class FakeTaskLocalDataSource implements TaskLocalDataSource {
   @override
   Future<void> clearTasks() async {
     storedTasks.clear();
+  }
+
+  @override
+  String? getStoredThemeMode() => storedThemeMode;
+
+  @override
+  Future<void> saveThemeMode(String mode) async {
+    storedThemeMode = mode;
   }
 }
 
@@ -123,6 +132,16 @@ void main() {
       final tasks = await repository.getTasks();
       expect(tasks.length, 1);
       expect(tasks.first.id, '2');
+    });
+
+    test('retrieves and persists theme mode', () async {
+      expect(repository.getThemeMode(), isNull);
+
+      await repository.setThemeMode('dark');
+      expect(repository.getThemeMode(), 'dark');
+
+      await repository.setThemeMode('light');
+      expect(repository.getThemeMode(), 'light');
     });
   });
 }

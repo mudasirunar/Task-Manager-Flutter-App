@@ -35,14 +35,17 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: AppColors.textPrimary,
+          style: TextStyle(
+            color: textPrimary,
             fontSize: 14,
             fontWeight: FontWeight.w600,
             letterSpacing: -0.2,
@@ -59,8 +62,8 @@ class CustomTextField extends StatelessWidget {
           validator: validator,
           onFieldSubmitted: onSubmitted,
           onChanged: onChanged,
-          style: const TextStyle(
-            color: AppColors.textPrimary,
+          style: TextStyle(
+            color: textPrimary,
             fontSize: 15,
             fontWeight: FontWeight.w400,
           ),

@@ -33,6 +33,13 @@ class TaskFilterChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final unselectedBg = isDark ? AppColors.darkSurface : AppColors.surface;
+    final unselectedBorder = isDark ? AppColors.darkBorder : AppColors.border;
+    final unselectedText = isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+    final countBgUnselected = isDark ? AppColors.darkSurfaceSubtle : AppColors.surfaceSubtle;
+    final countTextUnselected = isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(
@@ -47,7 +54,9 @@ class TaskFilterChips extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(right: AppDimensions.spaceSM),
             child: Material(
-              color: isSelected ? AppColors.primary : AppColors.surface,
+              color: isSelected
+                  ? (isDark ? AppColors.accent : AppColors.primary)
+                  : unselectedBg,
               borderRadius: AppDimensions.borderRadiusFull,
               elevation: 0,
               child: InkWell(
@@ -61,7 +70,9 @@ class TaskFilterChips extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: AppDimensions.borderRadiusFull,
                     border: Border.all(
-                      color: isSelected ? AppColors.primary : AppColors.border,
+                      color: isSelected
+                          ? (isDark ? AppColors.accent : AppColors.primary)
+                          : unselectedBorder,
                       width: 1.2,
                     ),
                   ),
@@ -73,7 +84,7 @@ class TaskFilterChips extends StatelessWidget {
                         style: TextStyle(
                           color: isSelected
                               ? AppColors.surface
-                              : AppColors.textPrimary,
+                              : unselectedText,
                           fontSize: 13.5,
                           fontWeight:
                               isSelected ? FontWeight.w600 : FontWeight.w500,
@@ -88,7 +99,7 @@ class TaskFilterChips extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? AppColors.surface.withValues(alpha: 0.2)
-                              : AppColors.surfaceSubtle,
+                              : countBgUnselected,
                           borderRadius: AppDimensions.borderRadiusFull,
                         ),
                         child: Text(
@@ -96,7 +107,7 @@ class TaskFilterChips extends StatelessWidget {
                           style: TextStyle(
                             color: isSelected
                                 ? AppColors.surface
-                                : AppColors.textSecondary,
+                                : countTextUnselected,
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                           ),

@@ -33,6 +33,12 @@ class MockTaskRepository implements TaskRepository {
       tasks[idx] = tasks[idx].copyWith(isCompleted: !tasks[idx].isCompleted);
     }
   }
+
+  @override
+  String? getThemeMode() => null;
+
+  @override
+  Future<void> setThemeMode(String mode) async {}
 }
 
 void main() {
@@ -51,12 +57,47 @@ void main() {
       );
     }
 
-    testWidgets('shows empty state when no tasks exist', (tester) async {
+    testWidgets('shows single empty state action button and hides FAB when no tasks exist', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
       expect(find.text(AppStrings.emptyAllTitle), findsOneWidget);
       expect(find.text(AppStrings.emptyAllSubtitle), findsOneWidget);
+      expect(find.text('Add Your First Task'), findsOneWidget);
+      // FloatingActionButton must NOT be visible when tasks list is empty to prevent duplicate CTA buttons
+      expect(find.byType(FloatingActionButton), findsNothing);
+    });
+
+    testWidgets('shows FAB and progress header when tasks exist', (tester) async {
+      final now = DateTime(2026, 9, 12);
+      mockRepo.tasks = [
+        TaskEntity(
+          id: '1',
+          title: 'Existing Task',
+          isCompleted: false,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      ];
+      await controller.loadTasks();
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FloatingActionButton), findsOneWidget);
+      expect(find.text('Today\'s Progress'), findsOneWidget);
+    });
+
+    testWidgets('tapping theme mode icon toggles theme', (tester) async {
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      expect(controller.isDarkMode, isFalse);
+      await tester.tap(find.byIcon(Icons.dark_mode_rounded));
+      await tester.pumpAndSettle();
+
+      expect(controller.isDarkMode, isTrue);
+      expect(find.byIcon(Icons.light_mode_rounded), findsOneWidget);
     });
 
     testWidgets('renders list of tasks when tasks are added', (tester) async {

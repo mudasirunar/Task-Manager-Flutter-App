@@ -9,6 +9,7 @@ import '../../widgets/common/app_empty_state.dart';
 import '../../widgets/common/confirmation_dialog.dart';
 import '../../widgets/task/task_card.dart';
 import '../../widgets/task/task_filter_chips.dart';
+import '../../widgets/task/task_progress_header.dart';
 import '../task_form/task_form_screen.dart';
 
 /// Main home dashboard screen displaying task metrics, filter chips, and task list.
@@ -91,6 +92,9 @@ class HomeScreen extends StatelessWidget {
       listenable: controller,
       builder: (context, _) {
         final tasks = controller.filteredTasks;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final subtitleColor =
+            isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
 
         return Scaffold(
           appBar: AppBar(
@@ -100,19 +104,43 @@ class HomeScreen extends StatelessWidget {
                 const Text(AppStrings.homeTitle),
                 Text(
                   '${controller.pendingCount} pending, ${controller.completedCount} completed',
-                  style: const TextStyle(
-                    color: AppColors.textSecondary,
+                  style: TextStyle(
+                    color: subtitleColor,
                     fontSize: 13,
                     fontWeight: FontWeight.w400,
                   ),
                 ),
               ],
             ),
+            actions: [
+              IconButton(
+                tooltip: controller.isDarkMode
+                    ? 'Switch to Light Mode'
+                    : 'Switch to Dark Mode',
+                icon: Icon(
+                  controller.isDarkMode
+                      ? Icons.light_mode_rounded
+                      : Icons.dark_mode_rounded,
+                ),
+                onPressed: () => controller.toggleTheme(context),
+              ),
+              const SizedBox(width: AppDimensions.spaceSM),
+            ],
           ),
           body: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Productivity Overview Card
+                if (controller.totalCount > 0)
+                  TaskProgressHeader(
+                    totalCount: controller.totalCount,
+                    pendingCount: controller.pendingCount,
+                    completedCount: controller.completedCount,
+                    completionRate: controller.completionRate,
+                    completionPercentage: controller.completionPercentage,
+                  ),
+
                 // Filter Chips Bar
                 TaskFilterChips(
                   activeFilter: controller.activeFilter,
@@ -136,11 +164,13 @@ class HomeScreen extends StatelessWidget {
                       : tasks.isEmpty
                           ? _buildEmptyState(context)
                           : ListView.separated(
-                              padding: const EdgeInsets.fromLTRB(
+                              padding: EdgeInsets.fromLTRB(
                                 AppDimensions.spaceMD,
                                 AppDimensions.spaceSM,
                                 AppDimensions.spaceMD,
-                                AppDimensions.spaceXXL + 32, // Space for FAB
+                                controller.totalCount > 0
+                                    ? AppDimensions.spaceXXL + 32
+                                    : AppDimensions.spaceLG,
                               ),
                               itemCount: tasks.length,
                               separatorBuilder: (context, index) =>
@@ -149,9 +179,49 @@ class HomeScreen extends StatelessWidget {
                                 final task = tasks[index];
                                 return TaskCard(
                                   task: task,
-                                  onToggle: () => controller.toggleTaskStatus(task.id),
-                                  onTap: () => _navigateToEditTask(context, task),
-                                  onDelete: () => _handleDeleteTask(context, task),
+                                  onToggle: () =>
+                                      controller.toggleTaskStatus(task.id),
+                                  onTap: () =>
+                                      _navigateToEditTask(context, task),
+                                  onDelete: () =>
+                                      _handleDeleteTask(context, task),
+                                  onConfirmDismiss: (direction) async {
+                                    if (direction ==
+                                        DismissDirection.startToEnd) {
+                                      // Swipe right: toggle status
+                                      await controller.toggleTaskStatus(task.id);
+                                      return false;
+                                    } else if (direction ==
+                                        DismissDirection.endToStart) {
+                                      // Swipe left: delete
+                                      final confirmed =
+                                          await ConfirmationDialog.show(
+                                        context,
+                                        title: AppStrings.deleteDialogTitle,
+                                        message:
+                                            'Are you sure you want to delete "${task.title}"?',
+                                      );
+                                      if (confirmed) {
+                                        await controller.deleteTask(task.id);
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                AppStrings.taskDeletedMessage,
+                                              ),
+                                              behavior:
+                                                  SnackBarBehavior.floating,
+                                              duration: Duration(seconds: 2),
+                                            ),
+                                          );
+                                        }
+                                        return true;
+                                      }
+                                      return false;
+                                    }
+                                    return false;
+                                  },
                                 );
                               },
                             ),
@@ -159,17 +229,23 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: () => _navigateToCreateTask(context),
-            icon: const Icon(Icons.add_rounded, size: AppDimensions.iconLG),
-            label: const Text(
-              'Add Task',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
+          // Only show FAB when there are tasks; on empty state, the central action button is shown.
+          floatingActionButton: controller.totalCount > 0
+              ? FloatingActionButton.extended(
+                  onPressed: () => _navigateToCreateTask(context),
+                  icon: const Icon(
+                    Icons.add_rounded,
+                    size: AppDimensions.iconLG,
+                  ),
+                  label: const Text(
+                    'Add Task',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+              : null,
         );
       },
     );

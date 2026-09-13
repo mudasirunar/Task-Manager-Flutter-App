@@ -36,8 +36,20 @@ class TaskSharedPrefsDataSource implements TaskLocalDataSource {
     await _prefs.setString(_storageKey, jsonString);
   }
 
+  static const String _themeKey = 'theme_mode_v1';
+
   @override
   Future<void> clearTasks() async {
     await _prefs.remove(_storageKey);
+  }
+
+  @override
+  String? getStoredThemeMode() {
+    return _prefs.getString(_themeKey);
+  }
+
+  @override
+  Future<void> saveThemeMode(String mode) async {
+    await _prefs.setString(_themeKey, mode);
   }
 }

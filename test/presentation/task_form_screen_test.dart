@@ -27,6 +27,12 @@ class FakeTaskRepository implements TaskRepository {
 
   @override
   Future<void> toggleTaskStatus(String id) async {}
+
+  @override
+  String? getThemeMode() => null;
+
+  @override
+  Future<void> setThemeMode(String mode) async {}
 }
 
 void main() {

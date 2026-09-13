@@ -22,6 +22,11 @@ class AppEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconBg = isDark ? AppColors.darkSurfaceSubtle : AppColors.surfaceSubtle;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
+
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppDimensions.spaceXL),
@@ -32,14 +37,14 @@ class AppEmptyState extends StatelessWidget {
             // Icon Container
             Container(
               padding: const EdgeInsets.all(AppDimensions.spaceLG),
-              decoration: const BoxDecoration(
-                color: AppColors.surfaceSubtle,
+              decoration: BoxDecoration(
+                color: iconBg,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
                 size: 44,
-                color: AppColors.textSecondary,
+                color: textSecondary,
               ),
             ),
             const SizedBox(height: AppDimensions.spaceLG),
@@ -48,8 +53,8 @@ class AppEmptyState extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.3,
@@ -63,8 +68,8 @@ class AppEmptyState extends StatelessWidget {
               child: Text(
                 subtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.textSecondary,
+                style: TextStyle(
+                  color: textSecondary,
                   fontSize: 14,
                   height: 1.5,
                 ),

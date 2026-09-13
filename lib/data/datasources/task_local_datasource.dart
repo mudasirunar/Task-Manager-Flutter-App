@@ -1,6 +1,6 @@
 import '../models/task_model.dart';
 
-/// Abstract contract for local persistent storage of tasks.
+/// Abstract contract for local persistent storage of tasks and user preferences.
 abstract interface class TaskLocalDataSource {
   /// Fetches cached tasks from storage. Returns empty list if none exist.
   Future<List<TaskModel>> getCachedTasks();
@@ -10,4 +10,10 @@ abstract interface class TaskLocalDataSource {
 
   /// Clears all tasks from storage.
   Future<void> clearTasks();
+
+  /// Retrieves the saved theme mode string ('system', 'light', 'dark').
+  String? getStoredThemeMode();
+
+  /// Persists the selected theme mode string.
+  Future<void> saveThemeMode(String mode);
 }

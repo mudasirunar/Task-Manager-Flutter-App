@@ -53,4 +53,14 @@ class TaskRepositoryImpl implements TaskRepository {
       await _localDataSource.cacheTasks(currentModels);
     }
   }
+
+  @override
+  String? getThemeMode() {
+    return _localDataSource.getStoredThemeMode();
+  }
+
+  @override
+  Future<void> setThemeMode(String mode) async {
+    await _localDataSource.saveThemeMode(mode);
+  }
 }

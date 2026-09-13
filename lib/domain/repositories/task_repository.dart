@@ -14,4 +14,10 @@ abstract interface class TaskRepository {
 
   /// Toggles the completion status of the task identified by [id].
   Future<void> toggleTaskStatus(String id);
+
+  /// Retrieves the saved theme mode string ('system', 'light', 'dark').
+  String? getThemeMode();
+
+  /// Saves the selected theme mode string.
+  Future<void> setThemeMode(String mode);
 }

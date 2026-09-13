@@ -42,6 +42,13 @@ class ConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
+    final iconBg = isDark
+        ? AppColors.error.withValues(alpha: 0.15)
+        : AppColors.errorLight;
+
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.all(AppDimensions.spaceLG),
@@ -52,8 +59,8 @@ class ConfirmationDialog extends StatelessWidget {
             // Warning Icon
             Container(
               padding: const EdgeInsets.all(AppDimensions.spaceMD),
-              decoration: const BoxDecoration(
-                color: AppColors.errorLight,
+              decoration: BoxDecoration(
+                color: iconBg,
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -67,8 +74,8 @@ class ConfirmationDialog extends StatelessWidget {
             // Dialog Title
             Text(
               title,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: textPrimary,
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.3,
@@ -79,8 +86,8 @@ class ConfirmationDialog extends StatelessWidget {
             // Dialog Message
             Text(
               message,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: textSecondary,
                 fontSize: 14,
                 height: 1.4,
               ),

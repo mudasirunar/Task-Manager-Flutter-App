@@ -13,8 +13,10 @@ class TaskStatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor =
-        isCompleted ? AppColors.successLight : AppColors.warningLight;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundColor = isDark
+        ? (isCompleted ? AppColors.darkSuccessLight : AppColors.darkWarningLight)
+        : (isCompleted ? AppColors.successLight : AppColors.warningLight);
     final foregroundColor =
         isCompleted ? AppColors.success : AppColors.warning;
     final label = isCompleted ? 'Completed' : 'Pending';

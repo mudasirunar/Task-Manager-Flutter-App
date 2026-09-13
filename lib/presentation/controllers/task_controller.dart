@@ -1,23 +1,27 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import '../../core/utils/validators.dart';
 import '../../domain/entities/task_entity.dart';
 import '../../domain/entities/task_filter.dart';
 import '../../domain/repositories/task_repository.dart';
 
-/// State management controller managing task business state using [ChangeNotifier].
+/// State management controller managing task business state and theme using [ChangeNotifier].
 class TaskController extends ChangeNotifier {
   final TaskRepository _repository;
 
-  TaskController(this._repository);
+  TaskController(this._repository) {
+    _initTheme();
+  }
 
   List<TaskEntity> _tasks = [];
   TaskFilter _activeFilter = TaskFilter.all;
+  ThemeMode _themeMode = ThemeMode.system;
   bool _isLoading = false;
   String? _errorMessage;
 
   // Getters
   List<TaskEntity> get tasks => List.unmodifiable(_tasks);
   TaskFilter get activeFilter => _activeFilter;
+  ThemeMode get themeMode => _themeMode;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
@@ -33,10 +37,57 @@ class TaskController extends ChangeNotifier {
     }
   }
 
-  // Live Metrics
+  // Live Metrics & Productivity Overview
   int get totalCount => _tasks.length;
   int get pendingCount => _tasks.where((t) => !t.isCompleted).length;
   int get completedCount => _tasks.where((t) => t.isCompleted).length;
+
+  /// Whether current theme is dark.
+  bool get isDarkMode => _themeMode == ThemeMode.dark;
+
+  /// Normalized completion progress between 0.0 and 1.0.
+  double get completionRate =>
+      totalCount == 0 ? 0.0 : (completedCount / totalCount).clamp(0.0, 1.0);
+
+  /// Completion percentage formatted as integer (0 to 100).
+  int get completionPercentage => (completionRate * 100).round();
+
+  /// Initializes the stored theme mode.
+  void _initTheme() {
+    final stored = _repository.getThemeMode();
+    if (stored == 'dark') {
+      _themeMode = ThemeMode.dark;
+    } else if (stored == 'light') {
+      _themeMode = ThemeMode.light;
+    } else {
+      _themeMode = ThemeMode.system;
+    }
+  }
+
+  /// Toggles theme between Light and Dark and persists the selection.
+  Future<void> toggleTheme([BuildContext? context]) async {
+    final bool isCurrentlyDark;
+    if (context != null && _themeMode == ThemeMode.system) {
+      isCurrentlyDark =
+          MediaQuery.platformBrightnessOf(context) == Brightness.dark;
+    } else {
+      isCurrentlyDark = _themeMode == ThemeMode.dark;
+    }
+
+    _themeMode = isCurrentlyDark ? ThemeMode.light : ThemeMode.dark;
+    notifyListeners();
+
+    await _repository.setThemeMode(_themeMode == ThemeMode.dark ? 'dark' : 'light');
+  }
+
+  /// Explicitly sets the theme mode.
+  Future<void> setThemeMode(ThemeMode mode) async {
+    if (_themeMode != mode) {
+      _themeMode = mode;
+      notifyListeners();
+      await _repository.setThemeMode(mode.name);
+    }
+  }
 
   /// Sets the active filter and notifies listeners.
   void setFilter(TaskFilter filter) {

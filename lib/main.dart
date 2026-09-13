@@ -30,11 +30,18 @@ class TaskManagerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: AppStrings.appName,
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      home: SplashScreen(controller: controller),
+    return ListenableBuilder(
+      listenable: controller,
+      builder: (context, _) {
+        return MaterialApp(
+          title: AppStrings.appName,
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: controller.themeMode,
+          home: SplashScreen(controller: controller),
+        );
+      },
     );
   }
 }

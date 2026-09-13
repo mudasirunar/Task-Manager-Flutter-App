@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:task_manager_app/core/constants/app_strings.dart';
 import 'package:task_manager_app/domain/entities/task_entity.dart';
@@ -7,6 +8,7 @@ import 'package:task_manager_app/presentation/controllers/task_controller.dart';
 
 class MockTaskRepository implements TaskRepository {
   List<TaskEntity> tasksList = [];
+  String? storedThemeMode;
 
   @override
   Future<List<TaskEntity>> getTasks() async {
@@ -35,6 +37,14 @@ class MockTaskRepository implements TaskRepository {
       final item = tasksList[idx];
       tasksList[idx] = item.copyWith(isCompleted: !item.isCompleted);
     }
+  }
+
+  @override
+  String? getThemeMode() => storedThemeMode;
+
+  @override
+  Future<void> setThemeMode(String mode) async {
+    storedThemeMode = mode;
   }
 }
 
@@ -142,6 +152,40 @@ void main() {
 
       expect(controller.totalCount, 0);
       expect(controller.tasks, isEmpty);
+    });
+
+    test('calculates completion rate and percentage accurately', () async {
+      expect(controller.completionRate, 0.0);
+      expect(controller.completionPercentage, 0);
+
+      await controller.addTask(title: 'Task 1');
+      await controller.addTask(title: 'Task 2');
+      expect(controller.totalCount, 2);
+      expect(controller.completionRate, 0.0);
+      expect(controller.completionPercentage, 0);
+
+      await controller.toggleTaskStatus(controller.tasks.first.id);
+      expect(controller.completionRate, 0.5);
+      expect(controller.completionPercentage, 50);
+
+      await controller.toggleTaskStatus(controller.tasks.last.id);
+      expect(controller.completionRate, 1.0);
+      expect(controller.completionPercentage, 100);
+    });
+
+    test('toggles theme mode between light and dark and persists choice', () async {
+      expect(controller.themeMode, ThemeMode.system);
+      expect(controller.isDarkMode, isFalse);
+
+      await controller.toggleTheme();
+      expect(controller.themeMode, ThemeMode.dark);
+      expect(controller.isDarkMode, isTrue);
+      expect(mockRepo.storedThemeMode, 'dark');
+
+      await controller.toggleTheme();
+      expect(controller.themeMode, ThemeMode.light);
+      expect(controller.isDarkMode, isFalse);
+      expect(mockRepo.storedThemeMode, 'light');
     });
   });
 }
