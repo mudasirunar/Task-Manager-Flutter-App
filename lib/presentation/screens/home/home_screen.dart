@@ -42,22 +42,14 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _handleDeleteTask(BuildContext context, TaskEntity task) async {
-    final confirmed = await ConfirmationDialog.show(
-      context,
-      title: AppStrings.deleteDialogTitle,
-      message: 'Are you sure you want to delete "${task.title}"?',
-    );
-
-    if (confirmed) {
-      await controller.deleteTask(task.id);
-      if (context.mounted) {
-        AppSnackBar.showDelete(
-          context,
-          taskTitle: task.title,
-          onUndo: () => controller.restoreTask(task),
-        );
-      }
+  void _handleDeleteTask(BuildContext context, TaskEntity task) {
+    controller.deleteTask(task.id);
+    if (context.mounted) {
+      AppSnackBar.showDelete(
+        context,
+        taskTitle: task.title,
+        onUndo: () => controller.restoreTask(task),
+      );
     }
   }
 
@@ -161,98 +153,106 @@ class HomeScreen extends StatelessWidget {
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-                // Productivity Overview Card
-                if (controller.totalCount > 0)
-                  TaskProgressHeader(
-                    totalCount: controller.totalCount,
-                    pendingCount: controller.pendingCount,
-                    completedCount: controller.completedCount,
-                    completionRate: controller.completionRate,
-                    completionPercentage: controller.completionPercentage,
-                  ),
-
-                // Filter Chips Bar
-                TaskFilterChips(
-                  activeFilter: controller.activeFilter,
+              // Productivity Overview Card
+              if (controller.totalCount > 0)
+                TaskProgressHeader(
                   totalCount: controller.totalCount,
                   pendingCount: controller.pendingCount,
                   completedCount: controller.completedCount,
-                  onFilterChanged: controller.setFilter,
+                  completionRate: controller.completionRate,
+                  completionPercentage: controller.completionPercentage,
                 ),
 
-                const SizedBox(height: AppDimensions.spaceXS),
+              // Filter Chips Bar
+              TaskFilterChips(
+                activeFilter: controller.activeFilter,
+                totalCount: controller.totalCount,
+                pendingCount: controller.pendingCount,
+                completedCount: controller.completedCount,
+                onFilterChanged: controller.setFilter,
+              ),
 
-                // Main Tasks View
-                Expanded(
-                  child: controller.isLoading
-                      ? Center(
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        )
-                      : tasks.isEmpty
-                          ? _buildEmptyState(context)
-                          : ListView.separated(
-                              padding: EdgeInsets.fromLTRB(
-                                AppDimensions.spaceMD,
-                                AppDimensions.spaceSM,
-                                AppDimensions.spaceMD,
-                                controller.totalCount > 0
-                                    ? 80.0
-                                    : AppDimensions.spaceMD,
-                              ),
-                              itemCount: tasks.length,
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(height: AppDimensions.spaceSM + 2),
-                              itemBuilder: (context, index) {
-                                final task = tasks[index];
-                                return TaskCard(
-                                  task: task,
-                                  onToggle: () =>
-                                      controller.toggleTaskStatus(task.id),
-                                  onTap: () =>
-                                      _navigateToEditTask(context, task),
-                                  onDelete: () =>
-                                      _handleDeleteTask(context, task),
-                                  onConfirmDismiss: (direction) async {
-                                    if (direction ==
-                                        DismissDirection.startToEnd) {
-                                      // Swipe right: toggle status
-                                      await controller.toggleTaskStatus(task.id);
-                                      return false;
-                                    } else if (direction ==
-                                        DismissDirection.endToStart) {
-                                      // Swipe left: delete
-                                      final confirmed =
-                                          await ConfirmationDialog.show(
-                                        context,
-                                        title: AppStrings.deleteDialogTitle,
-                                        message:
-                                            'Are you sure you want to delete "${task.title}"?',
+              const SizedBox(height: AppDimensions.spaceXS),
+
+              // Main Tasks View
+              Expanded(
+                child: controller.isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      )
+                    : tasks.isEmpty
+                        ? _buildEmptyState(context)
+                        : ListView.builder(
+                            padding: EdgeInsets.fromLTRB(
+                              AppDimensions.spaceMD,
+                              AppDimensions.spaceSM,
+                              AppDimensions.spaceMD,
+                              controller.totalCount > 0
+                                  ? 80.0
+                                  : AppDimensions.spaceMD,
+                            ),
+                            itemCount: tasks.length,
+                            itemBuilder: (context, index) {
+                              final task = tasks[index];
+                              return TaskCard(
+                                key: ValueKey(task.id),
+                                task: task,
+                                onToggle: () =>
+                                    controller.toggleTaskStatus(task.id),
+                                onTap: () =>
+                                    _navigateToEditTask(context, task),
+                                onDelete: () =>
+                                    _handleDeleteTask(context, task),
+                                onConfirmDismiss: (direction) async {
+                                  if (direction ==
+                                      DismissDirection.startToEnd) {
+                                    // Swipe right: toggle status
+                                    await controller.toggleTaskStatus(task.id);
+                                    return false;
+                                  } else if (direction ==
+                                      DismissDirection.endToStart) {
+                                    // Swipe left: delete
+                                    final confirmed =
+                                        await ConfirmationDialog.show(
+                                      context,
+                                      title: AppStrings.deleteDialogTitle,
+                                      message:
+                                          'Are you sure you want to delete "${task.title}"?',
+                                    );
+                                    if (confirmed) {
+                                      await Future.delayed(
+                                        const Duration(milliseconds: 140),
                                       );
-                                      if (confirmed) {
-                                        await controller.deleteTask(task.id);
-                                        if (context.mounted) {
-                                          AppSnackBar.showDelete(
-                                            context,
-                                            taskTitle: task.title,
-                                            onUndo: () =>
-                                                controller.restoreTask(task),
-                                          );
-                                        }
-                                        return true;
-                                      }
-                                      return false;
+                                      return true;
                                     }
                                     return false;
-                                  },
-                                );
-                              },
-                            ),
-                ),
-              ],
-            ),
+                                  }
+                                  return false;
+                                },
+                                onDismissed: (direction) {
+                                  if (direction ==
+                                      DismissDirection.endToStart) {
+                                    TaskCard.removeSeen(task.id);
+                                    controller.deleteTask(task.id);
+                                    if (context.mounted) {
+                                      AppSnackBar.showDelete(
+                                        context,
+                                        taskTitle: task.title,
+                                        onUndo: () =>
+                                            controller.restoreTask(task),
+                                      );
+                                    }
+                                  }
+                                },
+                              );
+                            },
+                          ),
+              ),
+            ],
+          ),
           // Only show FAB when there are tasks; on empty state, the central action button is shown.
           floatingActionButton: controller.totalCount > 0
               ? FloatingActionButton.extended(
