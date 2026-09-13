@@ -130,6 +130,27 @@ void main() {
       expect(find.byIcon(Icons.light_mode_rounded), findsOneWidget);
     });
 
+    testWidgets('shows Sun icon when initial device theme is dark, and toggles to light mode', (tester) async {
+      tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+      addTearDown(() {
+        tester.platformDispatcher.clearPlatformBrightnessTestValue();
+      });
+
+      await tester.pumpWidget(buildTestWidget());
+      await tester.pumpAndSettle();
+
+      // Since device is in dark mode, initial active theme is dark, so Sun icon is shown to switch to light
+      expect(controller.isDarkMode, isTrue);
+      expect(find.byIcon(Icons.light_mode_rounded), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.light_mode_rounded));
+      await tester.pumpAndSettle();
+
+      // Toggled to light mode
+      expect(controller.isDarkMode, isFalse);
+      expect(find.byIcon(Icons.dark_mode_rounded), findsOneWidget);
+    });
+
     testWidgets('renders list of tasks when tasks are added', (tester) async {
       final now = DateTime(2026, 9, 12);
       mockRepo.tasks = [

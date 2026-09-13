@@ -5,11 +5,14 @@ import '../../domain/entities/task_filter.dart';
 import '../../domain/repositories/task_repository.dart';
 
 /// State management controller managing task business state and theme using [ChangeNotifier].
-class TaskController extends ChangeNotifier {
+class TaskController extends ChangeNotifier with WidgetsBindingObserver {
   final TaskRepository _repository;
 
   TaskController(this._repository) {
     _initTheme();
+    try {
+      WidgetsBinding.instance.addObserver(this);
+    } catch (_) {}
   }
 
   List<TaskEntity> _tasks = [];
@@ -45,8 +48,19 @@ class TaskController extends ChangeNotifier {
   int get pendingCount => _tasks.where((t) => !t.isCompleted).length;
   int get completedCount => _tasks.where((t) => t.isCompleted).length;
 
-  /// Whether current theme is dark.
-  bool get isDarkMode => _themeMode == ThemeMode.dark;
+  /// Whether current active theme is dark.
+  /// If themeMode is [ThemeMode.system], it resolves to the device's system brightness.
+  bool get isDarkMode {
+    if (_themeMode == ThemeMode.system) {
+      try {
+        return WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+            Brightness.dark;
+      } catch (_) {
+        return false;
+      }
+    }
+    return _themeMode == ThemeMode.dark;
+  }
 
   /// Normalized completion progress between 0.0 and 1.0.
   double get completionRate =>
@@ -73,13 +87,7 @@ class TaskController extends ChangeNotifier {
 
   /// Toggles theme between Light and Dark and persists the selection.
   Future<void> toggleTheme([BuildContext? context]) async {
-    final bool isCurrentlyDark;
-    if (context != null && _themeMode == ThemeMode.system) {
-      isCurrentlyDark =
-          MediaQuery.platformBrightnessOf(context) == Brightness.dark;
-    } else {
-      isCurrentlyDark = _themeMode == ThemeMode.dark;
-    }
+    final bool isCurrentlyDark = isDarkMode;
 
     _themeMode = isCurrentlyDark ? ThemeMode.light : ThemeMode.dark;
     themeModeNotifier.value = _themeMode;
@@ -104,6 +112,9 @@ class TaskController extends ChangeNotifier {
 
   @override
   void dispose() {
+    try {
+      WidgetsBinding.instance.removeObserver(this);
+    } catch (_) {}
     themeModeNotifier.dispose();
     super.dispose();
   }
@@ -257,6 +268,13 @@ class TaskController extends ChangeNotifier {
   void clearError() {
     if (_errorMessage != null) {
       _errorMessage = null;
+      notifyListeners();
+    }
+  }
+
+  @override
+  void didChangePlatformBrightness() {
+    if (_themeMode == ThemeMode.system) {
       notifyListeners();
     }
   }
