@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/validators.dart';
 import '../../../domain/entities/task_entity.dart';
 import '../../controllers/task_controller.dart';
+import '../../widgets/common/app_snackbar.dart';
 import '../../widgets/common/custom_button.dart';
 import '../../widgets/common/custom_text_field.dart';
 
@@ -91,20 +91,11 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
     });
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            widget.isEditing
-                ? AppStrings.taskUpdatedMessage
-                : AppStrings.taskCreatedMessage,
-          ),
-          backgroundColor: AppColors.primary,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: AppDimensions.borderRadiusMedium,
-          ),
-          duration: const Duration(seconds: 2),
-        ),
+      AppSnackBar.showSuccess(
+        context,
+        message: widget.isEditing
+            ? AppStrings.taskUpdatedMessage
+            : AppStrings.taskCreatedMessage,
       );
       Navigator.of(context).pop();
     }

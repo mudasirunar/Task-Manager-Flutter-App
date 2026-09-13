@@ -238,6 +238,18 @@ class TaskController extends ChangeNotifier {
     }
   }
 
+  /// Restores a previously deleted task (supports SnackBar Undo).
+  Future<void> restoreTask(TaskEntity task) async {
+    try {
+      await _repository.saveTask(task);
+      _tasks = await _repository.getTasks();
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Failed to restore task: $e';
+      notifyListeners();
+    }
+  }
+
   /// Clears any transient error message.
   void clearError() {
     if (_errorMessage != null) {

@@ -160,6 +160,23 @@ abstract final class AppTheme {
         thickness: 1,
         space: 1,
       ),
+
+      // SnackBar Theme
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: AppColors.surface,
+        contentTextStyle: const TextStyle(
+          color: AppColors.textPrimary,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+        actionTextColor: AppColors.primary,
+        behavior: SnackBarBehavior.floating,
+        shape: const RoundedRectangleBorder(
+          borderRadius: AppDimensions.borderRadiusLarge,
+          side: BorderSide.none,
+        ),
+        elevation: 4,
+      ),
     );
   }
 
@@ -317,6 +334,23 @@ abstract final class AppTheme {
         color: AppColors.darkBorder,
         thickness: 1,
         space: 1,
+      ),
+
+      // SnackBar Theme
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: AppColors.darkSurface,
+        contentTextStyle: const TextStyle(
+          color: AppColors.darkTextPrimary,
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+        ),
+        actionTextColor: AppColors.accentLight,
+        behavior: SnackBarBehavior.floating,
+        shape: const RoundedRectangleBorder(
+          borderRadius: AppDimensions.borderRadiusLarge,
+          side: BorderSide.none,
+        ),
+        elevation: 8,
       ),
     );
   }

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../domain/entities/task_entity.dart';
 import '../../../domain/entities/task_filter.dart';
 import '../../controllers/task_controller.dart';
 import '../../widgets/common/app_empty_state.dart';
+import '../../widgets/common/app_snackbar.dart';
 import '../../widgets/common/confirmation_dialog.dart';
 import '../../widgets/task/task_card.dart';
 import '../../widgets/task/task_filter_chips.dart';
@@ -22,6 +22,7 @@ class HomeScreen extends StatelessWidget {
   });
 
   void _navigateToCreateTask(BuildContext context) {
+    AppSnackBar.dismiss(context);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => TaskFormScreen(controller: controller),
@@ -30,6 +31,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   void _navigateToEditTask(BuildContext context, TaskEntity task) {
+    AppSnackBar.dismiss(context);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => TaskFormScreen(
@@ -50,12 +52,10 @@ class HomeScreen extends StatelessWidget {
     if (confirmed) {
       await controller.deleteTask(task.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(AppStrings.taskDeletedMessage),
-            behavior: SnackBarBehavior.floating,
-            duration: Duration(seconds: 2),
-          ),
+        AppSnackBar.showDelete(
+          context,
+          taskTitle: task.title,
+          onUndo: () => controller.restoreTask(task),
         );
       }
     }
@@ -174,10 +174,10 @@ class HomeScreen extends StatelessWidget {
                 // Main Tasks View
                 Expanded(
                   child: controller.isLoading
-                      ? const Center(
+                      ? Center(
                           child: CircularProgressIndicator(
                             strokeWidth: 2.5,
-                            color: AppColors.primary,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         )
                       : tasks.isEmpty
@@ -223,16 +223,11 @@ class HomeScreen extends StatelessWidget {
                                       if (confirmed) {
                                         await controller.deleteTask(task.id);
                                         if (context.mounted) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                AppStrings.taskDeletedMessage,
-                                              ),
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              duration: Duration(seconds: 2),
-                                            ),
+                                          AppSnackBar.showDelete(
+                                            context,
+                                            taskTitle: task.title,
+                                            onUndo: () =>
+                                                controller.restoreTask(task),
                                           );
                                         }
                                         return true;
