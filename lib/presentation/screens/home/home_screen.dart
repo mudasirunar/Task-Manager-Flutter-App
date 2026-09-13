@@ -7,6 +7,7 @@ import '../../controllers/task_controller.dart';
 import '../../widgets/common/app_empty_state.dart';
 import '../../widgets/common/app_snackbar.dart';
 import '../../widgets/common/confirmation_dialog.dart';
+import '../../widgets/common/theme_toggle_button.dart';
 import '../../widgets/task/task_card.dart';
 import '../../widgets/task/task_filter_chips.dart';
 import '../../widgets/task/task_progress_header.dart';
@@ -124,18 +125,13 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
             actions: [
-              IconButton(
-                tooltip: controller.isDarkMode
-                    ? 'Switch to Light Mode'
-                    : 'Switch to Dark Mode',
-                icon: Icon(
-                  controller.isDarkMode
-                      ? Icons.light_mode_rounded
-                      : Icons.dark_mode_rounded,
+              Center(
+                child: ThemeToggleButton(
+                  isDarkMode: controller.isDarkMode,
+                  onToggle: () => controller.toggleTheme(context),
                 ),
-                onPressed: () => controller.toggleTheme(context),
               ),
-              const SizedBox(width: AppDimensions.spaceSM),
+              const SizedBox(width: AppDimensions.spaceMD),
             ],
           ),
           body: Column(
