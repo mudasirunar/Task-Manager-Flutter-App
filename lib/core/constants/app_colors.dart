@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 /// Semantic color tokens designed for a calm, professional, and modern UI.
 /// Supports both refined Light and deep Obsidian Dark mode palettes.
 abstract final class AppColors {
-  // Brand / Primary (Deep Slate Palette)
-  static const Color primary = Color(0xFF1E293B);
-  static const Color primaryLight = Color(0xFF334155);
-  static const Color accent = Color(0xFF3B82F6);
-  static const Color accentLight = Color(0xFF60A5FA);
+  // Brand / Primary Palette (Emerald Identity derived from App Icon)
+  // Light Mode: Deep, refined emerald for high contrast & executive feel on light surfaces
+  static const Color primary = Color(0xFF148460);
+  static const Color primaryLight = Color(0xFF1BAD7E);
+
+  // Dark Mode Accent / Primary: Luminous emerald-mint matching the app icon graphic
+  static const Color accent = Color(0xFF1BAD7E);
+  static const Color accentLight = Color(0xFF34D399);
 
   // Light Theme: Backgrounds & Surfaces
   static const Color background = Color(0xFFF8FAFC);
@@ -21,7 +24,7 @@ abstract final class AppColors {
 
   // Light Theme: Outlines & Dividers
   static const Color border = Color(0xFFE2E8F0);
-  static const Color borderFocused = Color(0xFF1E293B);
+  static const Color borderFocused = Color(0xFF10B981);
 
   // Dark Theme: Backgrounds & Surfaces (Deep Obsidian)
   static const Color darkBackground = Color(0xFF0B0F17);
@@ -35,7 +38,7 @@ abstract final class AppColors {
 
   // Dark Theme: Outlines & Dividers
   static const Color darkBorder = Color(0xFF263345);
-  static const Color darkBorderFocused = Color(0xFF60A5FA);
+  static const Color darkBorderFocused = Color(0xFF34D399);
 
   // Semantic Status: Completed (Emerald)
   static const Color success = Color(0xFF10B981);
@@ -58,7 +61,13 @@ abstract final class AppColors {
 
   // Gradients for progress & cards
   static const LinearGradient progressGradient = LinearGradient(
-    colors: [Color(0xFF3B82F6), Color(0xFF10B981)],
+    colors: [Color(0xFF148460), Color(0xFF1BAD7E)],
+    begin: Alignment.centerLeft,
+    end: Alignment.centerRight,
+  );
+
+  static const LinearGradient darkProgressGradient = LinearGradient(
+    colors: [Color(0xFF1BAD7E), Color(0xFF34D399)],
     begin: Alignment.centerLeft,
     end: Alignment.centerRight,
   );

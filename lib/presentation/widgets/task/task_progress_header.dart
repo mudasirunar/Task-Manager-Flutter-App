@@ -78,8 +78,8 @@ class TaskProgressHeader extends StatelessWidget {
               if (totalCount > 0)
                 Text(
                   '$completionPercentage%',
-                  style: const TextStyle(
-                    color: AppColors.accent,
+                  style: TextStyle(
+                    color: isDark ? AppColors.accent : AppColors.primary,
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
                     letterSpacing: -0.5,
@@ -120,9 +120,11 @@ class TaskProgressHeader extends StatelessWidget {
                     alignment: Alignment.centerLeft,
                     widthFactor: value.clamp(0.0, 1.0),
                     child: Container(
-                      decoration: const BoxDecoration(
-                        gradient: AppColors.progressGradient,
-                        borderRadius: BorderRadius.all(Radius.circular(999)),
+                      decoration: BoxDecoration(
+                        gradient: isDark
+                            ? AppColors.darkProgressGradient
+                            : AppColors.progressGradient,
+                        borderRadius: const BorderRadius.all(Radius.circular(999)),
                       ),
                     ),
                   );
