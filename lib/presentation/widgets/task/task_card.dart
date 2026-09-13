@@ -198,9 +198,9 @@ class TaskCard extends StatelessWidget {
 
                           // Delete Action Button
                           IconButton(
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.delete_outline_rounded,
-                              color: textMuted,
+                              color: AppColors.error,
                               size: AppDimensions.iconMD + 2,
                             ),
                             splashRadius: 20,

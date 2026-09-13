@@ -45,20 +45,34 @@ class ConfirmationDialog extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
     final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
+    final dialogBg = isDark ? AppColors.darkSurface : AppColors.surface;
     final iconBg = isDark
         ? AppColors.error.withValues(alpha: 0.15)
         : AppColors.errorLight;
 
     return Dialog(
+      backgroundColor: dialogBg,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: const BorderSide(
+          color: AppColors.error,
+          width: 1.4,
+        ),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(AppDimensions.spaceLG),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppDimensions.spaceLG,
+          vertical: AppDimensions.spaceLG + 4,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Warning Icon
+            // Warning Icon (Centered)
             Container(
-              padding: const EdgeInsets.all(AppDimensions.spaceMD),
+              width: 52,
+              height: 52,
               decoration: BoxDecoration(
                 color: iconBg,
                 shape: BoxShape.circle,
@@ -66,14 +80,15 @@ class ConfirmationDialog extends StatelessWidget {
               child: const Icon(
                 Icons.delete_outline_rounded,
                 color: AppColors.error,
-                size: AppDimensions.iconLG,
+                size: 26,
               ),
             ),
             const SizedBox(height: AppDimensions.spaceMD),
 
-            // Dialog Title
+            // Dialog Title (Centered)
             Text(
               title,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: textPrimary,
                 fontSize: 18,
@@ -83,16 +98,17 @@ class ConfirmationDialog extends StatelessWidget {
             ),
             const SizedBox(height: AppDimensions.spaceSM),
 
-            // Dialog Message
+            // Dialog Message (Centered)
             Text(
               message,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 color: textSecondary,
                 fontSize: 14,
-                height: 1.4,
+                height: 1.45,
               ),
             ),
-            const SizedBox(height: AppDimensions.spaceLG),
+            const SizedBox(height: AppDimensions.spaceLG + 4),
 
             // Action Buttons
             Row(
