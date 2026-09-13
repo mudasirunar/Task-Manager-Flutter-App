@@ -5,7 +5,7 @@ abstract final class AppStrings {
   static const String appTagline = 'Stay organized, daily.';
 
   // Home Screen
-  static const String homeTitle = 'My Tasks';
+  static const String homeTitle = 'Task Flow';
   static const String totalTasks = 'Total';
   static const String pendingTasks = 'Pending';
   static const String completedTasks = 'Completed';

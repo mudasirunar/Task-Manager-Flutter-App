@@ -92,22 +92,41 @@ class HomeScreen extends StatelessWidget {
       listenable: controller,
       builder: (context, _) {
         final tasks = controller.filteredTasks;
-        final isDark = Theme.of(context).brightness == Brightness.dark;
-        final subtitleColor =
-            isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
 
         return Scaffold(
           appBar: AppBar(
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            title: Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(AppStrings.homeTitle),
-                Text(
-                  '${controller.pendingCount} pending, ${controller.completedCount} completed',
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF3B82F6).withValues(alpha: 0.28),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.task_alt_rounded,
+                    size: 18,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Text(
+                  AppStrings.homeTitle,
                   style: TextStyle(
-                    color: subtitleColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: -0.4,
                   ),
                 ),
               ],
