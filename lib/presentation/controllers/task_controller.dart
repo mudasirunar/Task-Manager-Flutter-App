@@ -231,6 +231,9 @@ class TaskController extends ChangeNotifier {
     try {
       await _repository.deleteTask(id);
       _tasks = await _repository.getTasks();
+      if (_tasks.isEmpty) {
+        _activeFilter = TaskFilter.all;
+      }
       notifyListeners();
     } catch (e) {
       _errorMessage = 'Failed to delete task: $e';

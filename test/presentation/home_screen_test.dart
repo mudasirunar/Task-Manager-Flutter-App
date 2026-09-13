@@ -57,26 +57,18 @@ void main() {
       );
     }
 
-    testWidgets('shows single empty state action button and hides FAB when no tasks exist on all tabs', (tester) async {
+    testWidgets('shows clean empty screen with CTA button and no tabs or filter chips when no tasks exist', (tester) async {
       await tester.pumpWidget(buildTestWidget());
       await tester.pumpAndSettle();
 
-      // On 'All' tab
+      // Clean empty state with CTA button
       expect(find.text(AppStrings.emptyAllTitle), findsOneWidget);
       expect(find.text('Add Your First Task'), findsOneWidget);
       expect(find.byType(FloatingActionButton), findsNothing);
 
-      // Tap 'Pending' tab when no tasks exist
-      await tester.tap(find.text(AppStrings.filterPending));
-      await tester.pumpAndSettle();
-      expect(find.text(AppStrings.emptyAllTitle), findsOneWidget);
-      expect(find.text('Add Your First Task'), findsOneWidget);
-
-      // Tap 'Completed' tab when no tasks exist
-      await tester.tap(find.text(AppStrings.filterCompleted));
-      await tester.pumpAndSettle();
-      expect(find.text(AppStrings.emptyAllTitle), findsOneWidget);
-      expect(find.text('Add Your First Task'), findsOneWidget);
+      // No tabs or filter chips should be shown
+      expect(find.text(AppStrings.filterPending), findsNothing);
+      expect(find.text(AppStrings.filterCompleted), findsNothing);
     });
 
     testWidgets('shows specific filter messages when tasks exist in the app', (tester) async {

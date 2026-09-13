@@ -54,18 +54,6 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    // When there are no tasks in the app at all, all tabs show the CTA button to create the first task.
-    if (controller.totalCount == 0) {
-      return AppEmptyState(
-        icon: Icons.checklist_rounded,
-        title: AppStrings.emptyAllTitle,
-        subtitle: AppStrings.emptyAllSubtitle,
-        actionLabel: 'Add Your First Task',
-        onAction: () => _navigateToCreateTask(context),
-      );
-    }
-
-    // When at least one task exists in the app, show specific filter messages.
     switch (controller.activeFilter) {
       case TaskFilter.all:
         return AppEmptyState(
@@ -163,16 +151,17 @@ class HomeScreen extends StatelessWidget {
                   completionPercentage: controller.completionPercentage,
                 ),
 
-              // Filter Chips Bar
-              TaskFilterChips(
-                activeFilter: controller.activeFilter,
-                totalCount: controller.totalCount,
-                pendingCount: controller.pendingCount,
-                completedCount: controller.completedCount,
-                onFilterChanged: controller.setFilter,
-              ),
-
-              const SizedBox(height: AppDimensions.spaceXS),
+              // Filter Chips Bar (only shown when tasks exist in the app)
+              if (controller.totalCount > 0) ...[
+                TaskFilterChips(
+                  activeFilter: controller.activeFilter,
+                  totalCount: controller.totalCount,
+                  pendingCount: controller.pendingCount,
+                  completedCount: controller.completedCount,
+                  onFilterChanged: controller.setFilter,
+                ),
+                const SizedBox(height: AppDimensions.spaceXS),
+              ],
 
               // Main Tasks View
               Expanded(
