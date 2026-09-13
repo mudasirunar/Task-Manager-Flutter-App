@@ -121,100 +121,105 @@ class _TaskFormScreenState extends State<TaskFormScreen> {
           onPressed: _handleCancel,
         ),
       ),
-      body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: AppDimensions.paddingScreen,
-              keyboardDismissBehavior:
-                  ScrollViewKeyboardDismissBehavior.onDrag,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight -
-                      (AppDimensions.spaceMD * 2),
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Input Fields Group
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Task Title Field
-                          CustomTextField(
-                            controller: _titleController,
-                            focusNode: _titleFocusNode,
-                            label: AppStrings.titleLabel,
-                            hint: AppStrings.titleHint,
-                            errorText: _titleError,
-                            autofocus: !widget.isEditing,
-                            textInputAction: TextInputAction.next,
-                            onChanged: (val) {
-                              if (_titleError != null) {
-                                setState(() {
-                                  _titleError = Validators.validateTitle(val);
-                                });
-                              }
-                            },
-                            onSubmitted: (_) {
-                              _descFocusNode.requestFocus();
-                            },
-                          ),
-                          const SizedBox(height: AppDimensions.spaceLG),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
-                          // Description Field (Optional, multi-line)
-                          CustomTextField(
-                            controller: _descController,
-                            focusNode: _descFocusNode,
-                            label: AppStrings.descriptionLabel,
-                            hint: AppStrings.descriptionHint,
-                            maxLines: 5,
-                            minLines: 3,
-                            textInputAction: TextInputAction.newline,
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppDimensions.spaceMD,
+            ),
+            keyboardDismissBehavior:
+                ScrollViewKeyboardDismissBehavior.onDrag,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Input Fields Group
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: AppDimensions.spaceMD),
+
+                        // Task Title Field
+                        CustomTextField(
+                          controller: _titleController,
+                          focusNode: _titleFocusNode,
+                          label: AppStrings.titleLabel,
+                          hint: AppStrings.titleHint,
+                          errorText: _titleError,
+                          autofocus: !widget.isEditing,
+                          textInputAction: TextInputAction.next,
+                          onChanged: (val) {
+                            if (_titleError != null) {
+                              setState(() {
+                                _titleError = Validators.validateTitle(val);
+                              });
+                            }
+                          },
+                          onSubmitted: (_) {
+                            _descFocusNode.requestFocus();
+                          },
+                        ),
+                        const SizedBox(height: AppDimensions.spaceLG),
+
+                        // Description Field (Optional, multi-line)
+                        CustomTextField(
+                          controller: _descController,
+                          focusNode: _descFocusNode,
+                          label: AppStrings.descriptionLabel,
+                          hint: AppStrings.descriptionHint,
+                          maxLines: 5,
+                          minLines: 3,
+                          textInputAction: TextInputAction.newline,
+                        ),
+                      ],
+                    ),
+
+                    // Bottom Action Buttons (Save & Cancel)
+                    Padding(
+                      padding: EdgeInsets.only(
+                        top: AppDimensions.spaceXL,
+                        bottom: bottomPadding > 0
+                            ? bottomPadding + AppDimensions.spaceSM
+                            : AppDimensions.spaceMD,
+                      ),
+                      child: Row(
+                        children: [
+                          // Cancel Button
+                          Expanded(
+                            child: CustomButton(
+                              text: AppStrings.cancelButton,
+                              variant: ButtonVariant.secondary,
+                              onPressed: _isSubmitting ? null : _handleCancel,
+                            ),
+                          ),
+                          const SizedBox(width: AppDimensions.spaceMD),
+
+                          // Save Button
+                          Expanded(
+                            child: CustomButton(
+                              text: saveButtonLabel,
+                              variant: ButtonVariant.primary,
+                              isLoading: _isSubmitting,
+                              onPressed: _handleSave,
+                            ),
                           ),
                         ],
                       ),
-
-                      // Bottom Action Buttons (Save & Cancel)
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: AppDimensions.spaceXL,
-                          bottom: AppDimensions.spaceSM,
-                        ),
-                        child: Row(
-                          children: [
-                            // Cancel Button
-                            Expanded(
-                              child: CustomButton(
-                                text: AppStrings.cancelButton,
-                                variant: ButtonVariant.secondary,
-                                onPressed: _isSubmitting ? null : _handleCancel,
-                              ),
-                            ),
-                            const SizedBox(width: AppDimensions.spaceMD),
-
-                            // Save Button
-                            Expanded(
-                              child: CustomButton(
-                                text: saveButtonLabel,
-                                variant: ButtonVariant.primary,
-                                isLoading: _isSubmitting,
-                                onPressed: _handleSave,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

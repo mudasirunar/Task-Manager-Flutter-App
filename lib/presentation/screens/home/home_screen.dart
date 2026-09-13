@@ -146,10 +146,9 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(width: AppDimensions.spaceSM),
             ],
           ),
-          body: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
                 // Productivity Overview Card
                 if (controller.totalCount > 0)
                   TaskProgressHeader(
@@ -188,8 +187,8 @@ class HomeScreen extends StatelessWidget {
                                 AppDimensions.spaceSM,
                                 AppDimensions.spaceMD,
                                 controller.totalCount > 0
-                                    ? AppDimensions.spaceXXL + 32
-                                    : AppDimensions.spaceLG,
+                                    ? 80.0
+                                    : AppDimensions.spaceMD,
                               ),
                               itemCount: tasks.length,
                               separatorBuilder: (context, index) =>
@@ -242,7 +241,6 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
-          ),
           // Only show FAB when there are tasks; on empty state, the central action button is shown.
           floatingActionButton: controller.totalCount > 0
               ? FloatingActionButton.extended(
